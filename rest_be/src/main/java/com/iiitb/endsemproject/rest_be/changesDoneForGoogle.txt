@@ -1,0 +1,63 @@
+Simple explanation of what I changed
+Made AudienceValidator a record
+Converted
+AudienceValidator
+ to a Java record with a single audience field.
+Reason: It’s an immutable value holder + behavior, and Java 21 supports records. Removes boilerplate and fixes the IDE warning.
+Switched to Google ID token for auth
+In
+OAuth2AuthenticationSuccessHandler
+, after Google login, I set a cookie FACULTY_JWT with Google’s id_token.
+In
+JwtAuthenticationFilter
+, I now decode and validate that id_token using JwtDecoder instead of our own JWT service.
+Removed legacy JWTService usage
+Deleted all references to JWTService from
+JwtAuthenticationFilter
+ and
+OAuth2AuthenticationSuccessHandler
+.
+After confirming no code references remain, you can safely delete JWTService.java.
+Reason: We rely on Google-signed ID tokens now, so our custom JWT isn’t needed.
+Enabled proper OIDC flow
+Updated
+application.properties
+ to include openid in Google scopes: openid,email,profile.
+Reason: Without openid, Spring returns DefaultOAuth2User (no ID token). With openid, we get OidcUser and a valid id_token.
+Defensive fix to avoid ClassCastException
+In
+OAuth2AuthenticationSuccessHandler
+, I added a check:
+If the principal is not OidcUser, throw an AccessDeniedException with a clear message.
+Reason: Prevents ClassCastException when openid scope is missing or misconfigured.
+Validation is local but based on Google
+In
+SecurityConfig
+, JwtDecoder is configured with Google’s JWK set and issuer.
+I validate:
+iss = https://accounts.google.com
+aud matches your client_id via
+AudienceValidator
+.
+Reason: We verify Google tokens locally using Google’s public keys; no per-request call to Google.
+Fixed a bean circular dependency
+In
+SecurityConfig
+, I removed field injection of
+JwtAuthenticationFilter
+ and injected it as a method parameter to
+securityFilterChain(...)
+.
+Reason: Eliminates the circular reference between
+SecurityConfig
+ and
+JwtAuthenticationFilter
+.
+How to explain in viva
+We moved from a custom JWT to standard Google OIDC id_token.
+We validate tokens locally using Google’s public keys, issuer, and our client ID (audience).
+We added openid scope to ensure we receive an id_token and handle the principal as OidcUser.
+We cleaned up code (records, removed unused service) and fixed a Spring bean cycle by method injection.
+Status
+Code updated and ready.
+If you approve, delete JWTService.java and rebuild.

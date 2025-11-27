@@ -1,0 +1,489 @@
+Absolutely — here is a **super simple, beginner-level, viva-friendly React crash course** with examples.
+After reading this, you can confidently answer **basic React viva questions**.
+
+I will keep everything **very simple**, minimal, and beginner-friendly.
+
+---
+
+# 🟦 **1. What is React?**
+
+React is a **JavaScript library** used to build **UI components**.
+
+Key ideas:
+
+* Component based
+* Reusable UI
+* Uses JSX (HTML inside JS)
+* Manages state and rendering
+
+---
+
+# 🟦 **2. What is a Component?**
+
+A component is basically a **JavaScript function that returns UI (HTML-like JSX)**.
+
+Example:
+
+```jsx
+function Hello() {
+  return <h1>Hello World</h1>;
+}
+```
+
+Usage:
+
+```jsx
+<Hello />
+```
+
+In viva:
+👉 **“A component is a function that returns JSX and represents part of the UI.”**
+
+---
+
+# 🟦 **3. What is JSX?**
+
+JSX = JavaScript + HTML.
+
+Example:
+
+```jsx
+const element = <h1>Welcome!</h1>;
+```
+
+JSX looks like HTML but works inside JS.
+
+---
+
+# 🟦 **4. Props — Passing data to a component**
+
+Props = inputs to a component (like arguments to a function).
+
+Parent → Child:
+
+```jsx
+function Welcome({ name }) {
+  return <h2>Hello {name}</h2>;
+}
+
+<Welcome name="Adithi" />
+```
+
+In viva:
+👉 **“Props are read-only inputs passed from parent to child.”**
+
+---
+
+# 🟦 **5. useState — To store values inside a component**
+
+```jsx
+import { useState } from "react";
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <>
+      <h3>Count: {count}</h3>
+      <button onClick={() => setCount(count + 1)}>Increase</button>
+    </>
+  );
+}
+```
+
+In viva:
+👉 **“useState is a hook that gives us a state variable and a function to update that state.”**
+
+---
+
+# 🟦 **6. useEffect — Run code on mount or when state changes**
+
+```jsx
+import { useEffect, useState } from "react";
+
+function Timer() {
+  const [seconds, setSeconds] = useState(0);
+
+  useEffect(() => {
+    console.log("Component mounted or seconds changed");
+  }, [seconds]);
+}
+```
+
+In viva:
+👉 **“useEffect runs automatically after render.
+We use it for API calls, timers, and side effects.”**
+
+---
+
+# 🟦 **7. What is component mounting?**
+
+Mount = when the component first appears on the page.
+
+Unmount = when removed (like navigating away).
+
+useEffect example:
+
+```jsx
+useEffect(() => {
+  console.log("Mounted!");
+
+  return () => console.log("Unmounted!");
+}, []);
+```
+
+---
+
+# 🟦 **8. Conditional Rendering**
+
+Show something only if a condition is true.
+
+```jsx
+{isLoggedIn ? <Dashboard /> : <Login />}
+```
+
+---
+
+# 🟦 **9. Lists in React**
+
+```jsx
+const items = ["apple", "banana", "mango"];
+
+<ul>
+  {items.map(item => <li>{item}</li>)}
+</ul>
+```
+
+---
+
+# 🟦 **10. Events (like button click)**
+
+```jsx
+<button onClick={() => alert("Clicked!")}>Click Me</button>
+```
+
+---
+
+# 🟦 **11. Forms**
+
+```jsx
+function Form() {
+  const [name, setName] = useState("");
+
+  return (
+    <input
+      value={name}
+      onChange={e => setName(e.target.value)}
+    />
+  );
+}
+```
+
+---
+
+# 🟦 **12. useContext — for global state**
+
+Basic idea:
+Instead of passing props everywhere, we create a **global store**.
+
+Simple example:
+
+```jsx
+const UserContext = createContext();
+
+function App() {
+  return (
+    <UserContext.Provider value="Adithi">
+      <Navbar />
+    </UserContext.Provider>
+  );
+}
+
+function Navbar() {
+  const user = useContext(UserContext);
+  return <h1>Hello {user}</h1>;
+}
+```
+
+In viva:
+👉 **“Context is used for global values like user info or theme, without passing props down many levels.”**
+
+---
+
+# 🟦 **13. Folder structure (very common)**
+
+```
+src/
+  components/
+    Button.js
+    Navbar.js
+  pages/
+    Login.js
+    Home.js
+  context/
+    AuthContext.js
+  utils/
+    httpUtils.js
+  App.js
+  main.js
+```
+
+---
+
+# 🟦 **14. Basic Axios usage**
+
+```jsx
+import axios from "axios";
+
+axios.get("/api/users", {
+  headers: {
+    Authorization: "Bearer <token>"
+  }
+});
+```
+
+With interceptor:
+
+```jsx
+axios.interceptors.request.use((config) => {
+  config.headers.Authorization = "Bearer " + localStorage.getItem("token");
+  return config;
+});
+```
+
+---
+
+# 🟦 **15. Fetching API in useEffect**
+
+```jsx
+useEffect(() => {
+  axios.get("/api/data").then(res => {
+    console.log(res.data);
+  });
+}, []);
+```
+
+---
+
+# 🟢 **If you can remember these points, you can easily answer viva questions:**
+
+1. What is React?
+2. What are components?
+3. What are props?
+4. What is state?
+5. What is useState?
+6. What is useEffect?
+7. What is JSX?
+8. What is context?
+9. How to handle events?
+10. Conditional rendering
+11. Axios usage
+
+---
+
+1. Know the basics:
+--> useState: for local component data holding(variable can also do , but it never gets displayed)
+---> useContext: this is present to avail a Global context : like user data, login info , token handling etc
+--> useEffect(function,dependency)-> rerendering a component based on any fucntion : api call , time etc:
+Comopnent mount: 
+first time rendering a component on a page is called component mounting
+
+1. What is useCallback?
+🔹 Short answer (viva-safe):
+
+useCallback memoizes (saves) a function so React does NOT recreate it on every render.
+
+🔹 Why do we need it?
+
+Every time a component re-renders, all functions inside it get recreated.
+This causes problems when:
+
+Passing functions to child components
+
+Preventing unnecessary re-renders
+
+Using functions in useEffect dependencies
+
+🔹 Easy example:
+
+Without useCallback:
+
+function App() {
+  const handleClick = () => {
+    console.log("Clicked");
+  };
+
+  return <Button onClick={handleClick} />;
+}
+
+
+Every time App re-renders, handleClick is considered new, so Button may re-render again.
+
+With useCallback:
+
+import { useCallback } from "react";
+
+function App() {
+  const handleClick = useCallback(() => {
+    console.log("Clicked");
+  }, []); // dependencies = []
+
+  return <Button onClick={handleClick} />;
+}
+
+
+Now handleClick will be the same function instance every time.
+
+✨ Viva explanation:
+
+"useCallback returns a memoized version of a function.
+It prevents unnecessary re-renders, especially when passing functions as props to child components."
+
+▶ createContext
+
+Used to create a Context object.
+
+Example:
+
+import { createContext } from "react";
+
+export const AuthContext = createContext(null);
+
+
+Here, we created a “box” that will hold some value globally.
+
+▶ Providing the context (Provider)
+<AuthContext.Provider value={{ user: "Adithi" }}>
+  <App />
+</AuthContext.Provider>
+
+
+This sets the global value.
+
+▶ Using context in child components (useContext)
+import { useContext } from "react";
+import { AuthContext } from "./AuthContext";
+
+function Navbar() {
+  const auth = useContext(AuthContext);
+
+  return <h1>Hello {auth.user}</h1>;
+}
+
+
+Now any component inside this provider can access the value — no props needed.
+
+✨ Viva explanation:
+
+"createContext creates a global store.
+The Provider supplies a value to all child components.
+useContext allows any component to read this value without props."
+
+
+React.FC = React Functional Component type (TypeScript type).
+
+It tells TypeScript:
+
+“This is a React component (function component).”
+
+What is <{ children: React.ReactNode }> ?
+
+This part defines the props type of the component.
+
+We are telling TypeScript:
+
+“This component receives a prop called children,
+and children can be React.ReactNode.”
+
+🟦 What is React.ReactNode ?
+
+This means anything React can render:
+
+text
+
+HTML elements
+
+components
+
+fragments
+
+arrays of elements
+
+Example:
+
+<AuthProvider>
+  <Navbar />
+  <Dashboard />
+</AuthProvider>
+
+
+All those inside are children.
+
+✅ 3. What is { children } ?
+
+This is destructuring of the props.
+
+Instead of writing:
+
+(props) => {
+  const children = props.children;
+}
+
+
+We write:
+
+({ children }) => {
+
+
+Cleaner.
+
+🔥 Putting everything together:
+const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+
+
+This means:
+
+Define a component named AuthProvider
+
+It is a React Functional Component
+
+It takes one prop:
+children (anything React can render)
+
+The function receives children
+
+Inside the component, you will return a Provider:
+
+Example:
+
+return (
+  <AuthContext.Provider value={contextValue}>
+      {children}
+  </AuthContext.Provider>
+);
+
+🧠 Simple English Explanation (for viva)
+
+"React.FC is a TypeScript type that marks the function as a React component.
+By writing <{ children: React.ReactNode }> I specify that the component accepts children as a prop.
+In the function parameters ({ children }), the children are extracted from props."
+
+
+
+That line of code, const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {, defines a special type of React component called a High-Order Component (HOC) or a Wrapper Component, which is used specifically for client-side routing protection.
+
+Here is a breakdown of what each part of that line means, and why your application uses it:
+
+1. const ProtectedRoute: React.FC (The Type)
+const ProtectedRoute: Defines a constant variable named ProtectedRoute. In React, functions assigned to constants are how we define functional components.
+
+: React.FC: This is a TypeScript type annotation meaning "React Functional Component." This tells the TypeScript compiler that this constant holds a function that takes props and returns JSX.
+
+2. children: React.ReactNode (The Prop Definition)
+{ children: React.ReactNode }: This is a TypeScript interface defining the exact props this component accepts.
+
+children: This is a standard, built-in React prop. It represents whatever JSX elements you place between the opening and closing tags of the component.
+
+React.ReactNode: This is the TypeScript type for any valid JSX content (an element, a string, a number, an array of elements, or even null/undefined).
+
+Example Usage: When you define a route like this:

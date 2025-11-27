@@ -1,0 +1,41 @@
+Interface,Method Signature,Purpose
+Repository,,"(Base interface, provides marker)"
+CrudRepository,save(S entity),Saves a new entity or updates an existing one.
+,findById(ID id),Retrieves an entity by its primary key. Returns an Optional.
+,findAll(),Retrieves all entities of that type from the table.
+,delete(T entity),Deletes a specified entity.
+,existsById(ID id),Checks if an entity with the given ID exists.
+PagingAndSortingRepository,findAll(Sort sort),"Retrieves all entities, applying sorting criteria."
+,findAll(Pageable pageable),"Retrieves entities in chunks (pages), crucial for handling large datasets efficiently."
+JpaRepository,findAll() (redefined),Provides optimized findAll implementations.
+,flush(),Synchronizes the persistence context with the underlying database.
+,getOne(ID id),"Retrieves a reference to the entity (older method, use getById or getReferenceById now)."
+
+That's the core question when working with Spring Data JPA interfaces!
+
+The implementation of the methods defined in your repository interface is done automatically by Spring Data JPA at the time your application starts up. You never write the implementation code yourself.
+
+here i see in entity we have faculty a @join column, now i can find that id is the join column that is related to SalaryDisbursment table, now if i use email to find , will it work?
+
+Yes, it will work. Spring Data JPA derives queries from property paths, not from the physical join column name.
+Your SalaryDisbursment has private Faculty faculty; mapped with [JoinColumn(name](cci:4://file://JoinColumn(name:0:0-0:0) = "faculty_id").
+The method
+findByFaculty_Email(String email)
+ tells Spring Data to:
+Join salary_disbursement with faculty via the faculty association.
+Apply a where clause on faculty.email = ?.
+Join column vs. property path
+[JoinColumn(name](cci:4://file://JoinColumn(name:0:0-0:0) = "faculty_id") is the DB foreign key column.
+Faculty.email is a column in the joined table.
+Method name uses the object graph: faculty.email, not the DB column names.
+Best practices
+Ensure Faculty.email is unique (you already have [Column(nullable](cci:4://file://Column(nullable:0:0-0:0) = false, unique = true)).
+If you need ordering, prefer:
+findByFaculty_Email(String email, Sort sort)
+ or
+findByFaculty_EmailOrderByDisbursementDateDesc(String email).
+For large histories, add pagination:
+Page<SalaryDisbursment> findByFaculty_Email(String email, Pageable pageable).
+Summary
+Even though the join column is faculty_id, using email in the repository method works because Spring resolves it through the entity association, not by column name.
+
