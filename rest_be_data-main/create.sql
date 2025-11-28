@@ -25,6 +25,4 @@ CREATE TABLE salary_disbursement (
     faculty_id BIGINT NOT NULL,
     PRIMARY KEY (id),
     KEY idx_faculty_id (faculty_id),
-    CONSTRAINT fk_salary_faculty
-        FOREIGN KEY (faculty_id) REFERENCES faculty(id)
 );
